@@ -12,54 +12,21 @@ import (
 	"github.com/jmespath/go-jmespath"
 )
 
-type httpRequest struct {
-	Method     string              `json:"method"`
-	Body       string              `json:"body"`
-	ParsedBody interface{}         `json:"parsed_body"`
-	Path       string              `json:"path"`
-	Version    string              `json:"version"`
-	Headers    map[string][]string `json:"headers"`
-}
-
-type opaInput struct {
-	Input httpRequest `json:"input"`
-}
-
 type handlerClient struct {
 	httpClient     *http.Client
 	jmespathClient *jmespath.JMESPath
 }
 
 func (client *handlerClient) opa(w http.ResponseWriter, req *http.Request) {
-	reqBody, err := ioutil.ReadAll(req.Body)
-	defer req.Body.Close()
-
-	var reqJsonData interface{}
-	err = json.Unmarshal(reqBody, &reqJsonData)
-	if err != nil {
-		reqJsonData = ""
-	}
-
-	receivedRequest := httpRequest{
-		Method:     req.Method,
-		Body:       string(reqBody),
-		ParsedBody: reqJsonData,
-		Path:       req.URL.Path,
-		Version:    fmt.Sprintf("%d.%d", req.ProtoMajor, req.ProtoMinor),
-		Headers:    req.Header,
-	}
-
-	receivedRequestData, err := json.Marshal(opaInput{receivedRequest})
+	opaInput, err := RequestToOpaInput(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to marshal json from req: %s\n", err)
 		http.Error(w, "unknown error", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf("OPA input: %s\n", receivedRequestData)
-
 	endpoint := "http://opa-test:8181/v1/data/nginx/authz"
-	opaRequest, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(receivedRequestData))
+	opaRequest, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(opaInput))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create request to %q, recevied error: %s\n", endpoint, err)
 		http.Error(w, "unknown error", http.StatusInternalServerError)
