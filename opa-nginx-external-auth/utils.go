@@ -1,27 +1,28 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-func RequestBodyToString(req *http.Request) ([]byte, error) {
+func GetStringFromRequestBody(req *http.Request) (string, error) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	closeErr := req.Body.Close()
-	if closeErr != nil {
-		return nil, closeErr
+	err = req.Body.Close()
+	if err != nil {
+		return "", err
 	}
 
-	return body, nil
+	return string(body), nil
 }
 
-func RequestBodyJsonToStruct(body []byte) interface{} {
+func GetStructFromBody(body []byte) interface{} {
 	var jsonData interface{}
 	err := json.Unmarshal(body, &jsonData)
 	if err != nil {
@@ -31,7 +32,7 @@ func RequestBodyJsonToStruct(body []byte) interface{} {
 	return jsonData
 }
 
-type httpRequest struct {
+type Input struct {
 	Method     string              `json:"method"`
 	Body       string              `json:"body"`
 	ParsedBody interface{}         `json:"parsed_body"`
@@ -39,32 +40,47 @@ type httpRequest struct {
 	Version    string              `json:"version"`
 	Headers    map[string][]string `json:"headers"`
 }
-
-type opaInput struct {
-	Input httpRequest `json:"input"`
+type OpaInput struct {
+	Input `json:"input"`
 }
 
-func RequestToOpaInput(req *http.Request) ([]byte, error) {
-	body, err := RequestBodyToString(req)
+func GetOpaInputJson(req *http.Request) ([]byte, error) {
+	body, err := GetStringFromRequestBody(req)
 	if err != nil {
 		return nil, err
 	}
 
-	parsedBody := RequestBodyJsonToStruct(body)
+	parsedBody := GetStructFromBody([]byte(body))
 
 	path := ""
 	if req.URL != nil {
 		path = req.URL.Path
 	}
 
-	receivedRequest := httpRequest{
+	receivedRequest := Input{
 		Method:     req.Method,
-		Body:       string(body),
+		Body:       body,
 		ParsedBody: parsedBody,
 		Path:       path,
 		Version:    fmt.Sprintf("%d.%d", req.ProtoMajor, req.ProtoMinor),
 		Headers:    req.Header,
 	}
 
-	return json.Marshal(opaInput{receivedRequest})
+	return json.Marshal(OpaInput{receivedRequest})
+}
+
+func GetOpaRequest(req *http.Request, endpoint string) (*http.Request, error) {
+	opaInput, err := GetOpaInputJson(req)
+	if err != nil {
+		return nil, err
+	}
+
+	opaRequest, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(opaInput))
+	if err != nil {
+		return nil, err
+	}
+
+	opaRequest.Header.Add("Content-Type", "application/json")
+
+	return opaRequest, nil
 }

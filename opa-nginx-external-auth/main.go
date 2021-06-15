@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,29 +14,20 @@ import (
 type handlerClient struct {
 	httpClient     *http.Client
 	jmespathClient *jmespath.JMESPath
+	endpoint       string
 }
 
 func (client *handlerClient) opa(w http.ResponseWriter, req *http.Request) {
-	opaInput, err := RequestToOpaInput(req)
+	opaRequest, err := GetOpaRequest(req, client.endpoint)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unable to marshal json from req: %s\n", err)
+		fmt.Fprintf(os.Stderr, "Unable to create opa request to %q, recevied error: %s\n", client.endpoint, err)
 		http.Error(w, "unknown error", http.StatusInternalServerError)
 		return
 	}
-
-	endpoint := "http://opa-test:8181/v1/data/nginx/authz"
-	opaRequest, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(opaInput))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to create request to %q, recevied error: %s\n", endpoint, err)
-		http.Error(w, "unknown error", http.StatusInternalServerError)
-		return
-	}
-
-	opaRequest.Header.Add("Content-Type", "application/json")
 
 	opaResponse, err := client.httpClient.Do(opaRequest)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to send request to %q, recevied error: %s\n", endpoint, err)
+		fmt.Fprintf(os.Stderr, "Unable to send opa request to %q, recevied error: %s\n", client.endpoint, err)
 		http.Error(w, "unable to communicate with upstream", http.StatusInternalServerError)
 		return
 	}
@@ -110,6 +100,7 @@ func run() error {
 	handlerClient := &handlerClient{
 		httpClient:     httpClient,
 		jmespathClient: jmsepathClient,
+		endpoint:       "http://opa-test:8181/v1/data/nginx/authz",
 	}
 
 	http.HandleFunc("/", handlerClient.opa)
