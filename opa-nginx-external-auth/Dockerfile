@@ -3,8 +3,8 @@ WORKDIR /workspace
 COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download
-COPY opa-nginx-external-auth/ opa-nginx-external-auth/
-RUN go build -o opa_nginx_external_auth opa-nginx-external-auth/main.go
+COPY opa-nginx-external-auth/ .
+RUN go build -o opa_nginx_external_auth .
 
 FROM alpine:3.13
 RUN apk add --no-cache ca-certificates tini
