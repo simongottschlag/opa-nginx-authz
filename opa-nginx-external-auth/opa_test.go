@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -235,7 +236,9 @@ func TestGetOpaResponseStruct(t *testing.T) {
 		testServer := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			rw.Header().Add("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			rw.Write([]byte(c.opaResponse))
+			if _, err := rw.Write([]byte(c.opaResponse)); err != nil {
+				fmt.Fprintf(os.Stderr, "Could not write response data: %s", err)
+			}
 		}))
 		defer testServer.Close()
 
@@ -280,7 +283,9 @@ func TestGetResultFromOpaResponseStruct(t *testing.T) {
 		testServer := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			rw.Header().Add("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			rw.Write([]byte(c.opaResponse))
+			if _, err := rw.Write([]byte(c.opaResponse)); err != nil {
+				fmt.Fprintf(os.Stderr, "Could not write response data: %s", err)
+			}
 		}))
 		defer testServer.Close()
 

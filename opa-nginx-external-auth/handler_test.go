@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -48,11 +50,16 @@ func TestOpaHandler(t *testing.T) {
 			authz := opaReqInput.Headers["Authorization"][0]
 			if authz != "true" {
 				rw.WriteHeader(http.StatusForbidden)
-				rw.Write([]byte(`{"result": false}`))
+				if _, err := rw.Write([]byte(`{"result": false}`)); err != nil {
+					fmt.Fprintf(os.Stderr, "Could not write response data: %s", err)
+				}
+
 				return
 			}
 
-			rw.Write([]byte(`{"result": true}`))
+			if _, err := rw.Write([]byte(`{"result": true}`)); err != nil {
+				fmt.Fprintf(os.Stderr, "Could not write response data: %s", err)
+			}
 			rw.WriteHeader(http.StatusOK)
 		}))
 		defer testServer.Close()
