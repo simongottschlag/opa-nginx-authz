@@ -23,7 +23,7 @@ func NewHandlerClient(httpClient *http.Client, jmsepathClient *jmespath.JMESPath
 	}
 }
 
-func (client *HandlerClient) OpaHandler(w http.ResponseWriter, req *http.Request) {
+func (client *HandlerClient) OpaProxyHandler(w http.ResponseWriter, req *http.Request) {
 	opaResponse, err := GetOpaResponseStruct(client.httpClient, req, client.endpoint)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to get OPA response: %s\n", err)

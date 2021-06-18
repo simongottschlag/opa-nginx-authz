@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestOpaHandler(t *testing.T) {
+func TestOpaProxyHandler(t *testing.T) {
 	cases := []struct {
 		testDescription     string
 		authorizationHeader string
@@ -77,7 +77,7 @@ func TestOpaHandler(t *testing.T) {
 		req.Header.Add("Authorization", c.authorizationHeader)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(handlerClient.OpaHandler)
+		handler := http.HandlerFunc(handlerClient.OpaProxyHandler)
 
 		handler.ServeHTTP(rr, req)
 

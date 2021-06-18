@@ -47,7 +47,7 @@ func run() error {
 		Addr: address,
 	}
 
-	http.HandleFunc("/", handlerClient.OpaHandler)
+	http.HandleFunc("/proxy", handlerClient.OpaProxyHandler)
 
 	errGroup.Go(func() error {
 		fmt.Printf("Starting server: %s\n", address)
