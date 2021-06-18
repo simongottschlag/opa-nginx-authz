@@ -4,22 +4,24 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/jmespath/go-jmespath"
+	"github.com/open-policy-agent/opa/rego"
 )
 
 type HandlerClient struct {
 	httpClient     *http.Client
 	jmespathClient *jmespath.JMESPath
+	opaClient      *OpaClient
 	endpoint       string
 }
 
-func NewHandlerClient(httpClient *http.Client, jmsepathClient *jmespath.JMESPath, endpoint string) *HandlerClient {
+func NewHandlerClient(httpClient *http.Client, jmsepathClient *jmespath.JMESPath, opaClient *OpaClient, endpoint string) *HandlerClient {
 	return &HandlerClient{
 		httpClient:     httpClient,
 		jmespathClient: jmsepathClient,
 		endpoint:       endpoint,
+		opaClient:      opaClient,
 	}
 }
 
@@ -44,5 +46,53 @@ func (client *HandlerClient) OpaProxyHandler(w http.ResponseWriter, req *http.Re
 		return
 	}
 
-	fmt.Printf("%s Recevied successful request\n", time.Now())
+	// fmt.Printf("%s Recevied successful request\n", time.Now())
+}
+
+func (client *HandlerClient) OpaRegoHandler(w http.ResponseWriter, req *http.Request) {
+	input, err := GetOpaInput(req)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to generate opa input: %s\n", err)
+		http.Error(w, "unable to generate opa input", http.StatusInternalServerError)
+		return
+	}
+
+	r := client.opaClient.PartialResult.Rego(
+		rego.Input(input),
+	)
+
+	rs, err := r.Eval(req.Context())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to evaluate rego: %s\n", err)
+		http.Error(w, "unable to evaluate rego", http.StatusInternalServerError)
+		return
+	}
+
+	if len(rs) != 1 {
+		fmt.Fprintf(os.Stderr, "result set not eq 1\n")
+		http.Error(w, "result set not eq 1", http.StatusInternalServerError)
+		return
+	}
+
+	if len(rs[0].Expressions) != 1 {
+		fmt.Fprintf(os.Stderr, "expressions not eq 1\n")
+		http.Error(w, "expressions not eq 1", http.StatusInternalServerError)
+		return
+	}
+
+	authz := rs[0].Expressions[0].Value
+	result, ok := authz.(bool)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "Unable to typecast result\n")
+		http.Error(w, "unable to typecast result", http.StatusInternalServerError)
+		return
+	}
+
+	if !result {
+		fmt.Fprintf(os.Stderr, "Result is false\n")
+		http.Error(w, "result is false", http.StatusForbidden)
+		return
+	}
+
+	// fmt.Printf("%s Recevied successful request\n", time.Now())
 }

@@ -31,9 +31,14 @@ func run() error {
 		return err
 	}
 
-	handlerClient := NewHandlerClient(httpClient, jmsepathClient, "http://opa-test:8181/v1/data/nginx/authz")
-
 	ctx := context.Background()
+	opaClient, err := NewOpaClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	handlerClient := NewHandlerClient(httpClient, jmsepathClient, opaClient, "http://opa-test:8181/v1/data/nginx/authz")
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	errGroup, ctx := errgroup.WithContext(ctx)
@@ -48,6 +53,7 @@ func run() error {
 	}
 
 	http.HandleFunc("/proxy", handlerClient.OpaProxyHandler)
+	http.HandleFunc("/rego", handlerClient.OpaRegoHandler)
 
 	errGroup.Go(func() error {
 		fmt.Printf("Starting server: %s\n", address)

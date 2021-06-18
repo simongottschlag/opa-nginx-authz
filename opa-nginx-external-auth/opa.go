@@ -21,10 +21,10 @@ type OpaInput struct {
 	Input `json:"input"`
 }
 
-func GetOpaInputJson(req *http.Request) ([]byte, error) {
+func GetOpaInput(req *http.Request) (Input, error) {
 	body, err := GetStringFromBody(req.Body)
 	if err != nil && err.Error() != "Body is nil" {
-		return nil, fmt.Errorf("Request body error: %w", err)
+		return Input{}, fmt.Errorf("Request body error: %w", err)
 	}
 
 	var parsedBody interface{}
@@ -38,7 +38,7 @@ func GetOpaInputJson(req *http.Request) ([]byte, error) {
 		path = req.URL.Path
 	}
 
-	receivedRequest := Input{
+	input := Input{
 		Method:     req.Method,
 		Body:       body,
 		ParsedBody: parsedBody,
@@ -47,7 +47,16 @@ func GetOpaInputJson(req *http.Request) ([]byte, error) {
 		Headers:    req.Header,
 	}
 
-	return json.Marshal(OpaInput{receivedRequest})
+	return input, nil
+}
+
+func GetOpaInputJson(req *http.Request) ([]byte, error) {
+	input, err := GetOpaInput(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(OpaInput{input})
 }
 
 func GetOpaRequest(req *http.Request, endpoint string) (*http.Request, error) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -69,7 +70,11 @@ func TestOpaProxyHandler(t *testing.T) {
 		jmsepathClient, err := NewJmsepathClient("result")
 		require.NoError(t, err)
 
-		handlerClient := NewHandlerClient(httpClient, jmsepathClient, testServer.URL)
+		ctx := context.Background()
+		opaClient, err := NewOpaClient(ctx)
+		require.NoError(t, err)
+
+		handlerClient := NewHandlerClient(httpClient, jmsepathClient, opaClient, testServer.URL)
 
 		req, err := http.NewRequest("GET", "/", nil)
 		require.NoError(t, err)
