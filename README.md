@@ -5,6 +5,8 @@ Lab to test opa authz for nginx
 
 Start all services: `./run.sh`
 
+Restart the above before each test!
+
 ### OPA
 
 Run load test: `k6 run loadtest-opa.js`
