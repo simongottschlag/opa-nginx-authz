@@ -187,3 +187,35 @@ default ✓ [======================================] 00/30 VUs  25s
      vus............................: 1       min=1   max=29 
      vus_max........................: 30      min=30  max=30 
 ```
+
+### nginx private opa
+
+**PLEASE OBSERVE: OPA WILL ALWAYS RESPOND WITH OK HOWEVER THE RESULT IS EVALUATED**
+
+Run load test: `k6 run loadtest-nginx-private-opa.js`
+
+```shell
+running (25.0s), 00/30 VUs, 51367 complete and 0 interrupted iterations
+default ✓ [======================================] 00/30 VUs  25s
+
+     ✓ status is 200
+
+     check_failure_rate.............: 0.00%   ✓ 0     ✗ 51367
+     checks.........................: 100.00% ✓ 51367 ✗ 0    
+     data_received..................: 44 MB   1.7 MB/s
+     data_sent......................: 6.1 MB  244 kB/s
+     http_req_blocked...............: avg=2.6µs   min=708ns    med=1.5µs   max=3.58ms   p(90)=2.66µs  p(95)=2.99µs 
+     http_req_connecting............: avg=560ns   min=0s       med=0s      max=3.42ms   p(90)=0s      p(95)=0s     
+     http_req_duration..............: avg=8.22ms  min=319.62µs med=3.36ms  max=128.61ms p(90)=20.47ms p(95)=36.5ms 
+       { expected_response:true }...: avg=8.22ms  min=319.62µs med=3.36ms  max=128.61ms p(90)=20.47ms p(95)=36.5ms 
+     http_req_failed................: 0.00%   ✓ 0     ✗ 51367
+     http_req_receiving.............: avg=32.74µs min=11.03µs  med=23.11µs max=12.56ms  p(90)=52.05µs p(95)=59.48µs
+     http_req_sending...............: avg=11.88µs min=4.61µs   med=7.7µs   max=9.5ms    p(90)=13.72µs p(95)=15.89µs
+     http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s       p(90)=0s      p(95)=0s     
+     http_req_waiting...............: avg=8.18ms  min=288.67µs med=3.32ms  max=128.57ms p(90)=20.41ms p(95)=36.44ms
+     http_reqs......................: 51367   2054.510551/s
+     iteration_duration.............: avg=8.32ms  min=382.99µs med=3.46ms  max=128.67ms p(90)=20.59ms p(95)=36.58ms
+     iterations.....................: 51367   2054.510551/s
+     vus............................: 1       min=1   max=29 
+     vus_max........................: 30      min=30  max=30 
+```
