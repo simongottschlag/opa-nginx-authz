@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -301,6 +302,51 @@ func TestGetResultFromOpaResponseStruct(t *testing.T) {
 		require.NoError(t, err)
 
 		result, err := GetResultFromOpaResponseStruct(jmsepathClient, responseStruct)
+		require.NoError(t, err)
+
+		require.Equal(t, c.expectedResult, result)
+	}
+}
+
+func TestGetResultWithOpaInput(t *testing.T) {
+	cases := []struct {
+		testDescription string
+		opaInput        Input
+		expectedResult  bool
+	}{
+		{
+			testDescription: "result true",
+			opaInput: Input{
+				Method:     "GET",
+				Body:       "",
+				ParsedBody: "",
+				Path:       "/",
+				Version:    "",
+				Headers:    map[string][]string{"Authorization": {"Bearer test"}},
+			},
+			expectedResult: true,
+		},
+		{
+			testDescription: "result false",
+			opaInput: Input{
+				Method:     "GET",
+				Body:       "",
+				ParsedBody: "",
+				Path:       "/",
+				Version:    "",
+				Headers:    map[string][]string{"Authorization": {"Bearer false"}},
+			},
+			expectedResult: false,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Test iteration %d: %s", i, c.testDescription)
+		ctx := context.Background()
+		opaClient, err := NewOpaClient(ctx)
+		require.NoError(t, err)
+
+		result, err := GetResultWithOpaInput(ctx, opaClient, c.opaInput)
 		require.NoError(t, err)
 
 		require.Equal(t, c.expectedResult, result)

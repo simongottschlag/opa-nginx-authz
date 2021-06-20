@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/jmespath/go-jmespath"
+	"github.com/open-policy-agent/opa/rego"
 )
 
 type Input struct {
@@ -117,7 +119,34 @@ func GetResultFromOpaResponseStruct(client *jmespath.JMESPath, response interfac
 
 	result, ok := jmespathResult.(bool)
 	if !ok {
+		return false, fmt.Errorf("unable to typecast result")
+	}
+
+	return result, nil
+}
+
+func GetResultWithOpaInput(ctx context.Context, opaClient *OpaClient, input Input) (bool, error) {
+	r := opaClient.PartialResult.Rego(
+		rego.Input(input),
+	)
+
+	rs, err := r.Eval(ctx)
+	if err != nil {
 		return false, err
+	}
+
+	if len(rs) != 1 {
+		return false, fmt.Errorf("result set not eq 1")
+	}
+
+	if len(rs[0].Expressions) != 1 {
+		return false, fmt.Errorf("expressions not eq 1")
+	}
+
+	authz := rs[0].Expressions[0].Value
+	result, ok := authz.(bool)
+	if !ok {
+		return false, fmt.Errorf("unable to typecast result")
 	}
 
 	return result, nil

@@ -89,3 +89,48 @@ func TestOpaProxyHandler(t *testing.T) {
 		require.Equal(t, c.expectedStatus, rr.Code)
 	}
 }
+
+func TestOpaRegoHandler(t *testing.T) {
+	cases := []struct {
+		testDescription     string
+		authorizationHeader string
+		expectedStatus      int
+	}{
+		{
+			testDescription:     "status ok",
+			authorizationHeader: "Bearer test",
+			expectedStatus:      http.StatusOK,
+		},
+		{
+			testDescription:     "status forbidden",
+			authorizationHeader: "Bearer abc",
+			expectedStatus:      http.StatusForbidden,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Test iteration %d: %s", i, c.testDescription)
+		httpClient := NewHttpClient()
+
+		jmsepathClient, err := NewJmsepathClient("result")
+		require.NoError(t, err)
+
+		ctx := context.Background()
+		opaClient, err := NewOpaClient(ctx)
+		require.NoError(t, err)
+
+		handlerClient := NewHandlerClient(httpClient, jmsepathClient, opaClient, "http://foo.bar/baz")
+
+		req, err := http.NewRequest("GET", "/", nil)
+		require.NoError(t, err)
+
+		req.Header.Add("Authorization", c.authorizationHeader)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(handlerClient.OpaRegoHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, c.expectedStatus, rr.Code)
+	}
+}
