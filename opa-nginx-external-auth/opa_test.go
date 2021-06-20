@@ -308,6 +308,57 @@ func TestGetResultFromOpaResponseStruct(t *testing.T) {
 	}
 }
 
+func BenchmarkGetResultFromOpaResponseStructMock(b *testing.B) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.Header().Add("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		if _, err := rw.Write([]byte(`{"result": true}`)); err != nil {
+			fmt.Fprintf(os.Stderr, "Could not write response data: %s", err)
+		}
+	}))
+	defer testServer.Close()
+
+	httpClient := NewHttpClient()
+
+	jmsepathClient, err := NewJmsepathClient("result")
+	require.NoError(b, err)
+
+	req := testReq
+	req.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(testBody)))
+
+	responseStruct, err := GetOpaResponseStruct(httpClient, req, testServer.URL)
+	require.NoError(b, err)
+
+	for i := 0; i < b.N; i++ {
+		result, err := GetResultFromOpaResponseStruct(jmsepathClient, responseStruct)
+		require.NoError(b, err)
+		require.Equal(b, true, result)
+	}
+}
+
+func BenchmarkGetResultFromOpaResponseStruct(b *testing.B) {
+	httpClient := NewHttpClient()
+
+	jmsepathClient, err := NewJmsepathClient("result")
+	require.NoError(b, err)
+
+	req := testReq
+	req.Header.Add("Authorization", "Bearer test")
+	req.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(testBody)))
+
+	_, err = GetOpaResponseStruct(httpClient, req, "http://localhost:8181/v1/data/nginx/authz")
+	require.NoError(b, err)
+
+	for i := 0; i < b.N; i++ {
+		responseStruct, err := GetOpaResponseStruct(httpClient, req, "http://localhost:8181/v1/data/nginx/authz")
+		require.NoError(b, err)
+
+		result, err := GetResultFromOpaResponseStruct(jmsepathClient, responseStruct)
+		require.NoError(b, err)
+		require.Equal(b, true, result)
+	}
+}
+
 func TestGetResultWithOpaInput(t *testing.T) {
 	cases := []struct {
 		testDescription string
@@ -350,5 +401,26 @@ func TestGetResultWithOpaInput(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, c.expectedResult, result)
+	}
+}
+
+func BenchmarkGetResultWithOpaInput(b *testing.B) {
+	input := Input{
+		Method:     "GET",
+		Body:       "",
+		ParsedBody: "",
+		Path:       "/",
+		Version:    "",
+		Headers:    map[string][]string{"Authorization": {"Bearer test"}},
+	}
+
+	ctx := context.Background()
+	opaClient, err := NewOpaClient(ctx)
+	require.NoError(b, err)
+
+	for i := 0; i < b.N; i++ {
+		result, err := GetResultWithOpaInput(ctx, opaClient, input)
+		require.NoError(b, err)
+		require.Equal(b, true, result)
 	}
 }
