@@ -126,11 +126,7 @@ func GetResultFromOpaResponseStruct(client *jmespath.JMESPath, response interfac
 }
 
 func GetResultWithOpaInput(ctx context.Context, opaClient *OpaClient, input Input) (bool, error) {
-	r := opaClient.PartialResult.Rego(
-		rego.Input(input),
-	)
-
-	rs, err := r.Eval(ctx)
+	rs, err := opaClient.PreparedEvalQuery.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return false, err
 	}

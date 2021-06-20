@@ -60,7 +60,7 @@ func NewJmsepathClient(expression string) (*jmespath.JMESPath, error) {
 var content embed.FS
 
 type OpaClient struct {
-	PartialResult rego.PartialResult
+	PreparedEvalQuery rego.PreparedEvalQuery
 }
 
 func NewOpaClient(ctx context.Context) (*OpaClient, error) {
@@ -80,12 +80,12 @@ func NewOpaClient(ctx context.Context) (*OpaClient, error) {
 		rego.Query(`data.nginx.authz`),
 	)
 
-	pr, err := r.PartialResult(ctx)
+	pq, err := r.PrepareForEval(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &OpaClient{
-		PartialResult: pr,
+		PreparedEvalQuery: pq,
 	}, nil
 }
