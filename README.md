@@ -133,29 +133,29 @@ default   [======================================] 00/30 VUs  25s
 Run load test: `k6 run loadtest-nginx-private-proxy.js`
 
 ```shell
-running (25.0s), 00/30 VUs, 63390 complete and 0 interrupted iterations
+running (25.0s), 00/30 VUs, 119911 complete and 0 interrupted iterations
 default ✓ [======================================] 00/30 VUs  25s
 
      ✓ status is 200
 
-     check_failure_rate.............: 0.00%   ✓ 0     ✗ 63390
-     checks.........................: 100.00% ✓ 63390 ✗ 0    
-     data_received..................: 54 MB   2.2 MB/s
-     data_sent......................: 7.7 MB  307 kB/s
-     http_req_blocked...............: avg=2.38µs  min=884ns    med=1.6µs   max=3.39ms  p(90)=2.46µs  p(95)=2.92µs 
-     http_req_connecting............: avg=298ns   min=0s       med=0s      max=2.14ms  p(90)=0s      p(95)=0s     
-     http_req_duration..............: avg=6.65ms  min=496.78µs med=4.94ms  max=81.77ms p(90)=12.57ms p(95)=18.07ms
-       { expected_response:true }...: avg=6.65ms  min=496.78µs med=4.94ms  max=81.77ms p(90)=12.57ms p(95)=18.07ms
-     http_req_failed................: 0.00%   ✓ 0     ✗ 63390
-     http_req_receiving.............: avg=32.26µs min=12.51µs  med=24.74µs max=11.04ms p(90)=42.06µs p(95)=55.61µs
-     http_req_sending...............: avg=13.69µs min=4.99µs   med=8.19µs  max=31.41ms p(90)=13.69µs p(95)=16.06µs
+     check_failure_rate.............: 0.00%   ✓ 0      ✗ 119911
+     checks.........................: 100.00% ✓ 119911 ✗ 0     
+     data_received..................: 102 MB  4.1 MB/s
+     data_sent......................: 14 MB   580 kB/s
+     http_req_blocked...............: avg=1.99µs  min=766ns    med=1.47µs  max=2.84ms  p(90)=1.88µs  p(95)=2.39µs 
+     http_req_connecting............: avg=155ns   min=0s       med=0s      max=1.06ms  p(90)=0s      p(95)=0s     
+     http_req_duration..............: avg=3.47ms  min=357.79µs med=2.65ms  max=41.64ms p(90)=7.08ms  p(95)=9.23ms 
+       { expected_response:true }...: avg=3.47ms  min=357.79µs med=2.65ms  max=41.64ms p(90)=7.08ms  p(95)=9.23ms 
+     http_req_failed................: 0.00%   ✓ 0      ✗ 119911
+     http_req_receiving.............: avg=28.19µs min=9.63µs   med=22.23µs max=15.88ms p(90)=31.31µs p(95)=36.38µs
+     http_req_sending...............: avg=11.35µs min=4.51µs   med=7.53µs  max=15.18ms p(90)=11.13µs p(95)=13.9µs 
      http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s      p(95)=0s     
-     http_req_waiting...............: avg=6.6ms   min=474.84µs med=4.91ms  max=81.66ms p(90)=12.51ms p(95)=18ms   
-     http_reqs......................: 63390   2535.166203/s
-     iteration_duration.............: avg=6.74ms  min=548.51µs med=5.03ms  max=81.83ms p(90)=12.68ms p(95)=18.23ms
-     iterations.....................: 63390   2535.166203/s
-     vus............................: 1       min=1   max=29 
-     vus_max........................: 30      min=30  max=30 
+     http_req_waiting...............: avg=3.44ms  min=324.46µs med=2.62ms  max=41.6ms  p(90)=7.03ms  p(95)=9.16ms 
+     http_reqs......................: 119911  4796.152669/s
+     iteration_duration.............: avg=3.55ms  min=414.45µs med=2.73ms  max=41.71ms p(90)=7.18ms  p(95)=9.34ms 
+     iterations.....................: 119911  4796.152669/s
+     vus............................: 1       min=1    max=29  
+     vus_max........................: 30      min=30   max=30 
 ```
 
 ### nginx private rego
@@ -163,29 +163,29 @@ default ✓ [======================================] 00/30 VUs  25s
 Run load test: `k6 run loadtest-nginx-private-rego.js`
 
 ```shell
-running (25.0s), 00/30 VUs, 50707 complete and 0 interrupted iterations
+running (25.0s), 00/30 VUs, 199494 complete and 0 interrupted iterations
 default ✓ [======================================] 00/30 VUs  25s
 
      ✓ status is 200
 
-     check_failure_rate.............: 0.00%   ✓ 0     ✗ 50707
-     checks.........................: 100.00% ✓ 50707 ✗ 0    
-     data_received..................: 43 MB   1.7 MB/s
-     data_sent......................: 6.1 MB  243 kB/s
-     http_req_blocked...............: avg=2.28µs  min=810ns    med=1.52µs  max=1.68ms  p(90)=2.61µs  p(95)=2.97µs 
-     http_req_connecting............: avg=252ns   min=0s       med=0s      max=1.47ms  p(90)=0s      p(95)=0s     
-     http_req_duration..............: avg=8.34ms  min=360.45µs med=3.56ms  max=67.39ms p(90)=22.38ms p(95)=28.7ms 
-       { expected_response:true }...: avg=8.34ms  min=360.45µs med=3.56ms  max=67.39ms p(90)=22.38ms p(95)=28.7ms 
-     http_req_failed................: 0.00%   ✓ 0     ✗ 50707
-     http_req_receiving.............: avg=33.82µs min=9.31µs   med=23.83µs max=21.97ms p(90)=52.27µs p(95)=59.67µs
-     http_req_sending...............: avg=12.55µs min=4.36µs   med=7.68µs  max=15.2ms  p(90)=13.58µs p(95)=15.63µs
-     http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s      p(95)=0s     
-     http_req_waiting...............: avg=8.29ms  min=328.54µs med=3.51ms  max=67.36ms p(90)=22.32ms p(95)=28.64ms
-     http_reqs......................: 50707   2028.021526/s
-     iteration_duration.............: avg=8.43ms  min=420.46µs med=3.65ms  max=67.48ms p(90)=22.49ms p(95)=28.82ms
-     iterations.....................: 50707   2028.021526/s
-     vus............................: 1       min=1   max=29 
-     vus_max........................: 30      min=30  max=30 
+     check_failure_rate.............: 0.00%   ✓ 0      ✗ 199494
+     checks.........................: 100.00% ✓ 199494 ✗ 0     
+     data_received..................: 170 MB  6.8 MB/s
+     data_sent......................: 24 MB   958 kB/s
+     http_req_blocked...............: avg=2.55µs  min=659ns    med=1.33µs  max=10.42ms p(90)=1.84µs p(95)=2.39µs 
+     http_req_connecting............: avg=312ns   min=0s       med=0s      max=3.59ms  p(90)=0s     p(95)=0s     
+     http_req_duration..............: avg=2.04ms  min=202.62µs med=1.42ms  max=34.16ms p(90)=4.27ms p(95)=5.8ms  
+       { expected_response:true }...: avg=2.04ms  min=202.62µs med=1.42ms  max=34.16ms p(90)=4.27ms p(95)=5.8ms  
+     http_req_failed................: 0.00%   ✓ 0      ✗ 199494
+     http_req_receiving.............: avg=30.62µs min=9.2µs    med=17.18µs max=20.69ms p(90)=27.2µs p(95)=36.21µs
+     http_req_sending...............: avg=12.85µs min=3.84µs   med=6.65µs  max=20.59ms p(90)=9.74µs p(95)=13.98µs
+     http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s     p(95)=0s     
+     http_req_waiting...............: avg=1.99ms  min=184.75µs med=1.38ms  max=33.99ms p(90)=4.21ms p(95)=5.71ms 
+     http_reqs......................: 199494  7979.292418/s
+     iteration_duration.............: avg=2.13ms  min=251.11µs med=1.5ms   max=34.24ms p(90)=4.41ms p(95)=5.98ms 
+     iterations.....................: 199494  7979.292418/s
+     vus............................: 1       min=1    max=29  
+     vus_max........................: 30      min=30   max=30  
 ```
 
 ### nginx private opa
@@ -195,27 +195,28 @@ default ✓ [======================================] 00/30 VUs  25s
 Run load test: `k6 run loadtest-nginx-private-opa.js`
 
 ```shell
-running (25.0s), 00/30 VUs, 51367 complete and 0 interrupted iterations
+running (25.0s), 00/30 VUs, 33899 complete and 0 interrupted iterations
 default ✓ [======================================] 00/30 VUs  25s
 
-     ✓ status is 200
+     ✗ status is 200
+      ↳  83% — ✓ 28231 / ✗ 5668
 
-     check_failure_rate.............: 0.00%   ✓ 0     ✗ 51367
-     checks.........................: 100.00% ✓ 51367 ✗ 0    
-     data_received..................: 44 MB   1.7 MB/s
-     data_sent......................: 6.1 MB  244 kB/s
-     http_req_blocked...............: avg=2.6µs   min=708ns    med=1.5µs   max=3.58ms   p(90)=2.66µs  p(95)=2.99µs 
-     http_req_connecting............: avg=560ns   min=0s       med=0s      max=3.42ms   p(90)=0s      p(95)=0s     
-     http_req_duration..............: avg=8.22ms  min=319.62µs med=3.36ms  max=128.61ms p(90)=20.47ms p(95)=36.5ms 
-       { expected_response:true }...: avg=8.22ms  min=319.62µs med=3.36ms  max=128.61ms p(90)=20.47ms p(95)=36.5ms 
-     http_req_failed................: 0.00%   ✓ 0     ✗ 51367
-     http_req_receiving.............: avg=32.74µs min=11.03µs  med=23.11µs max=12.56ms  p(90)=52.05µs p(95)=59.48µs
-     http_req_sending...............: avg=11.88µs min=4.61µs   med=7.7µs   max=9.5ms    p(90)=13.72µs p(95)=15.89µs
-     http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s       p(90)=0s      p(95)=0s     
-     http_req_waiting...............: avg=8.18ms  min=288.67µs med=3.32ms  max=128.57ms p(90)=20.41ms p(95)=36.44ms
-     http_reqs......................: 51367   2054.510551/s
-     iteration_duration.............: avg=8.32ms  min=382.99µs med=3.46ms  max=128.67ms p(90)=20.59ms p(95)=36.58ms
-     iterations.....................: 51367   2054.510551/s
-     vus............................: 1       min=1   max=29 
-     vus_max........................: 30      min=30  max=30 
+     check_failure_rate.............: 16.72% ✓ 5668  ✗ 28231
+     checks.........................: 83.27% ✓ 28231 ✗ 5668 
+     data_received..................: 28 MB  1.1 MB/s
+     data_sent......................: 4.0 MB 161 kB/s
+     http_req_blocked...............: avg=31.17µs min=892ns    med=1.58µs  max=15.33ms p(90)=112.21µs p(95)=136.45µs
+     http_req_connecting............: avg=21.64µs min=0s       med=0s      max=15.02ms p(90)=71.48µs  p(95)=87.06µs 
+     http_req_duration..............: avg=12.49ms min=313.34µs med=10.37ms max=89.58ms p(90)=28.41ms  p(95)=33.98ms 
+       { expected_response:true }...: avg=11.2ms  min=313.34µs med=6.33ms  max=89.58ms p(90)=27.19ms  p(95)=33.23ms 
+     http_req_failed................: 16.72% ✓ 5668  ✗ 28231
+     http_req_receiving.............: avg=41.98µs min=10.64µs  med=26.02µs max=13.65ms p(90)=72.94µs  p(95)=88.66µs 
+     http_req_sending...............: avg=18.31µs min=4.4µs    med=8.26µs  max=14.38ms p(90)=43.34µs  p(95)=51.85µs 
+     http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s      
+     http_req_waiting...............: avg=12.43ms min=286.56µs med=10.31ms max=89.54ms p(90)=28.31ms  p(95)=33.89ms 
+     http_reqs......................: 33899  1355.734075/s
+     iteration_duration.............: avg=12.61ms min=377.01µs med=10.5ms  max=89.66ms p(90)=28.56ms  p(95)=34.12ms 
+     iterations.....................: 33899  1355.734075/s
+     vus............................: 1      min=1   max=29 
+     vus_max........................: 30     min=30  max=30 
 ```
