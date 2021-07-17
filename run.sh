@@ -26,7 +26,7 @@ docker network create --driver bridge opaauthznginx 1>/dev/null
 echo "$(timestamp) [RUN] Docker network created"
 
 echo "$(timestamp) [RUN] Starting opa"
-docker run --network opaauthznginx -p 8181:8181 -v "$(pwd)"/opa:/mnt:ro --name opa-test -d openpolicyagent/opa:0.29.4-debug run --log-level info -c /mnt/opa.conf --server --addr :8181 /mnt 1>/dev/null 2>&1
+docker run --network opaauthznginx -p 8181:8181 -v "$(pwd)"/opa:/mnt:ro --name opa-test -d openpolicyagent/opa:0.29.4-debug run --log-level error -c /mnt/opa.conf --server --addr :8181 /mnt 1>/dev/null 2>&1
 echo "$(timestamp) [RUN] Started opa"
 
 echo "$(timestamp) [RUN] Starting opa-nginx-external-auth"

@@ -22,7 +22,7 @@ export default function () {
         },
     };
 
-    let response = http.get("http://localhost:8080/private", params)
+    let response = http.get("http://localhost:8082/rego", params)
 
     let checkRes = check(response, {
         "status is 200": (r) => r.status === 200

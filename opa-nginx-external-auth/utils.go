@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +11,8 @@ import (
 	"time"
 
 	"github.com/jmespath/go-jmespath"
+	"github.com/open-policy-agent/opa/bundle"
+	"github.com/open-policy-agent/opa/rego"
 )
 
 func GetStringFromBody(input io.ReadCloser) (string, error) {
@@ -50,4 +54,38 @@ func NewHttpClient() *http.Client {
 
 func NewJmsepathClient(expression string) (*jmespath.JMESPath, error) {
 	return jmespath.Compile(expression)
+}
+
+//go:embed rego/*
+var content embed.FS
+
+type OpaClient struct {
+	PreparedEvalQuery rego.PreparedEvalQuery
+}
+
+func NewOpaClient(ctx context.Context) (*OpaClient, error) {
+	loader, err := bundle.NewFSLoader(content)
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bundle.NewCustomReader(loader).WithSkipBundleVerification(true)
+	b, err := reader.Read()
+	if err != nil {
+		return nil, err
+	}
+
+	r := rego.New(
+		rego.ParsedBundle("bundle", &b),
+		rego.Query(`data.nginx.authz`),
+	)
+
+	pq, err := r.PrepareForEval(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &OpaClient{
+		PreparedEvalQuery: pq,
+	}, nil
 }
